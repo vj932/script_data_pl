@@ -1,0 +1,2 @@
+Kanamycin	Kanamycin	Carbenicillin	Carbenicillin
+1.04	1.04	12.50	12.50
