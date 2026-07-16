@@ -179,3 +179,17 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# files and data
+new_data_alt.csv
+new_data.csv
+Growth_curveAlt.txt
+Growth_curve.txt
+NORMALIZED_CFU_vs_time.txt
+NORMALIZED_CFU_vs_timeAlt.txt
+OD_values_growth_curve_uv_vs_ck_070126.txt
+OD.txt
+ODalt.txt
+pGFPck_plasmidLoss_carb_vs_kan.txt
+pGFPckPLcarbkanAlt.txt
+RAW_CFU_vs_timetxt.txt
