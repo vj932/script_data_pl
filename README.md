@@ -87,3 +87,4 @@ python3 get_loss.py 0.08k -g -o kan_results.txt --graph-out kan_plot.png
 | `-g`, `--graph` | Display the bar plot and save it as an image. | off |
 | `-o`, `--output` | Path for the numerical results text file. | `results.txt` in this folder |
 | `--graph-out` | Path for the saved graph image (only used with `-g`). | `loss_rates.png` in this folder |
+
