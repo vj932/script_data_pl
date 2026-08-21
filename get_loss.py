@@ -25,7 +25,7 @@ class findPlasmidLossRate:
 
         # gets the average of the replicates for each treatment in each dataframe and stores it as a new dataframe
         self.avg_odpcb_df = self.averageReplicates(self.odpcb_df)
-        self.avg_via_df = self.averageReplicates(self.death_df)
+        self.avg_via_df = self.averageReplicates(self.death_df) / 100
 
         # prop_dark can be a filepath to a csv, a numeric proportion, or a list of (prop, treatment) tuples
         if isinstance(self.prop_dark, list):
@@ -70,15 +70,15 @@ class findPlasmidLossRate:
         for col in df_new.columns: #(1)
             df_new[col] = pd.to_numeric(df_new[col], errors='coerce') 
 
-        # this step is done with respect to the exact dimensions of the data given, so needs to be modified if data format changes
+        # This step is done with respect to dimensions of data input. If using a different number of trials per replicate, modify accordingly. 
         for ind in range(len(df_new)): #(3)
-            if ind % 5 == 4: # 5 works due to it being th enumber of trials per replicate
+            if ind % 5 == 4: # 5 works due to it being the number of trials per replicate
                 count = int(ind / 5)
                 temp_row = df_new.iloc[ind - 4:ind + 1].sum() #(2)
 
                 prev_val = None
 
-                # implementation specific to format given, just gets dark colonies and total colonies for each treatment
+                # also done with respect to specific data formatting, change as needed. 
                 for ind, val in enumerate(temp_row.values):
                     if ind % 2 == 0:
                         prev_val = val
@@ -135,7 +135,7 @@ class findPlasmidLossRate:
         return loss_rates
 
     def getLoss(self, row: pd.Series) -> dict: 
-        'compute the loss rate for one replicate of each treatment'
+        'This is the core function that transforms observed proportions of dark colonies into plasmid loss rates using the survival curve data and the doubling time. '
 
         beta = math.log(2) / self.d_time
         rates = {}
@@ -156,7 +156,7 @@ class findPlasmidLossRate:
             valid_time = time_col[valid_prop]
             valid_prop = via_prop[valid_prop]
 
-            T = valid_time.max() # gets the length of the survival curve
+            T = valid_time.max() # gets the length of the survival curve 
             p = lambda t: np.interp(t, valid_time, valid_prop) # defines the survival function as a linear interpolation of the viability data for the current treatment
 
             # calculates the loss rate using the formula derived in the notebook, wiht scipy's quad and brentq (root finder) functions

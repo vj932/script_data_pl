@@ -194,3 +194,7 @@ pGFPck_plasmidLoss_carb_vs_kan.txt
 pGFPckPLcarbkanAlt.txt
 RAW_CFU_vs_timetxt.txt
 plasKin00.ipynb
+plot_mc.png
+Overview of plasmid loss model copy.md
+estimate_loss.py
+results_mc.txt

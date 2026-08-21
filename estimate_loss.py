@@ -20,6 +20,7 @@ SEED = 42
 
 
 def main():
+    '''This script estimates plasmid loss rates using a parametric bootstrap approach. Here, the triplicates are pooled over each treatmenet, and each data point is assumed to be i.i.d. '''
     script_dir = os.path.dirname(os.path.abspath(__file__))
     odpcb_file = os.path.join(script_dir, "OD_values_growth_curve_uv_vs_ck_070126.txt")
     viability_file = os.path.join(script_dir, "NORMALIZED_CFU_vs_time.txt")
