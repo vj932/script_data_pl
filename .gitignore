@@ -183,7 +183,7 @@ cython_debug/
 # files and data
 new_data_alt.csv
 Growth_curveAlt.txt
-NORMALIZED_CFU_vs_time.txt
+NORMALIZED_CFU_vs_timeAlt.txt
 OD.txt
 ODalt.txt
 pGFPck_plasmidLoss_carb_vs_kan.txt
@@ -194,3 +194,6 @@ plot_mc.png
 Overview of plasmid loss model copy.md
 estimate_loss.py
 results_mc.txt
+new_data_results.txt
+getLoss_patch.py
+loss_plot_mean+std.png
