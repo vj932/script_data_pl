@@ -14,18 +14,16 @@ class findPlasmidLossRate:
 
     def __init__(self, od_pcb, viability, prop_dark, treatment='Carbenicillin'):
 
-        self.od_pcb = od_pcb
-        self.viability = viability
+        self.od_pcb = od_pcb # corresponds to the growth data for a strain used to generate prop_dark
+        self.viability = viability # corresponds % viable cells over time in exposure to an antibiotic treatment
         self.prop_dark = prop_dark
         self.treatment = treatment
-
-        #loads dataframes from the input files
         self.odpcb_df   = pd.read_csv(self.od_pcb, sep='\t')
         self.death_df   = pd.read_csv(self.viability, sep='\t')
 
         # gets the average of the replicates for each treatment in each dataframe and stores it as a new dataframe
         self.avg_odpcb_df = self.averageReplicates(self.odpcb_df)
-        self.avg_via_df = self.averageReplicates(self.death_df) / 100
+        self.avg_via_df = self.averageReplicates(self.death_df)
 
         # prop_dark can be a filepath to a csv, a numeric proportion, or a list of (prop, treatment) tuples
         if isinstance(self.prop_dark, list):
@@ -55,6 +53,7 @@ class findPlasmidLossRate:
         Takes the experimental data of rows labeled with 'delta #X' and returns a dataframe with final plasmid loss proportions for each antibiotic treatment. Colony counts are averaged over each replicate, denoted by shared number. 
         '''
 
+        # lines specific to naming conventions of the data used for the corresponding paper, may need to be modified for other data inputs.
         df_new = df[df.index.str.contains(r'delta\s\d', regex=True, na=False)]
 
         count = sum(df_new.index.str.contains(r'delta\s\d', regex=True))
@@ -100,32 +99,41 @@ class findPlasmidLossRate:
         df.columns = df.columns.str.replace(r'\.\d+$', '', regex=True)
 
         # Group and average replicate columns and average them
-        grouped = df.groupby(df.columns, axis=1).mean()
+        grouped = df.T.groupby(df.columns).mean().T
         return grouped
 
     def getDoublingTime(self):
         '''Gets the average doubling time of the population from OD data - uses the "Top10 / pGFPck Δ6" strain grown under carbenicillin as the reference culture'''
         df = self.avg_odpcb_df.copy()
-        col = "Top10 / pGFPck Δ6"
+        col = "Top10 / pGFPck Δ6" # this script hardcodes the name of the column used for the doubling time calculation in alignment with the strain used when observing plasmidless generation.
 
         time_col = df.columns[0]
 
-        # Calculates doubling time from the maximum and minimum OD values from the growth data and the time between them, as growth is monotonic. 
-        # note : this can be changed at a later point in prefereence of a more logical interval selection rule
-        max_time = df[time_col].max()
-        od_fchange = df[col].max() / df[col].min()
-        dtime = max_time / (math.log(od_fchange) / math.log(2))
+        min_doub_time = None
+        # iterates through dataframe by interval and computes doubling time over each interval to get minimum doubling time over growth curve as the final proportions we have are 
+        for i in range(len(df) - 1):
+            start = df[col].iloc[i]
+            end = df[col].iloc[i + 1]
+            time_diff = df[time_col].iloc[i + 1] - df[time_col].iloc[i]
+            od_change = end / start
+            dtime = time_diff / (math.log(od_change) / math.log(2))
+            if min_doub_time is None or dtime < min_doub_time:
+                min_doub_time = dtime
+                
+         
 
-        return dtime
+        return min_doub_time
     
-    def getLosses(self):
-        '''Get plasmid loss rates for each replicate and treatment'''
+    def getLosses(self) -> dict:
+        '''Get plasmid loss rates for each replicate and treatment and stores by treatment'''
         loss_rates = {'Kanamycin': [], 'Carbenicillin': []} # empty dictionary to store loss rates
 
+        # iterates by row through the proportions dataframe, and calls the getLoss function to calculate the loss rates for each treatment
         for ind, row in self.proportions_df.iterrows():
-            if ind != 'total_avg':
+            if ind != 'total_avg': # specific to formatting of data used for the corresponding paper
                 rates_curr = self.getLoss(row)
-                for key in rates_curr:
+
+                for key in rates_curr: # specific to corresponding paper, ensure treatment label matches data input
                     if key.split('.')[0] == 'Carbenicillin':
                         loss_rates['Carbenicillin'].append(rates_curr[key])
                     elif key.split('.')[0] == 'Kanamycin':
@@ -135,23 +143,26 @@ class findPlasmidLossRate:
         return loss_rates
 
     def getLoss(self, row: pd.Series) -> dict: 
-        'This is the core function that transforms observed proportions of dark colonies into plasmid loss rates using the survival curve data and the doubling time. '
+        'This is the core function that transforms observed proportions of dark colonies into plasmid loss rates using the survival curve data and the doubling time'
 
-        beta = math.log(2) / self.d_time
+        beta = math.log(2) / self.d_time # continuous growth rate factor
+
         rates = {}
+
         for treatment in row.index:
             #strips .x from treatment labels in propdark_df to match them with the labels in the viability dataframe
             treat = treatment.split('.')[0]
             prop_dark = row[treatment]
             if pd.isna(prop_dark):
                 continue
-            # calculates C / F, assumes data is in form of percentage of dark cells
+            # calculates C(T) / F(T), assumes data is in form of percentage of dark cells
             prop = float(prop_dark)
             R = (1 - prop) / prop
 
             # gets a linear interpolation of the survival curve for current treatment label 
             time_col = self.avg_via_df['Hours']
             via_prop = self.avg_via_df[treat]
+            via_prop = via_prop / 100  # converts to proportion from percentage
             valid_prop = via_prop.notna()
             valid_time = time_col[valid_prop]
             valid_prop = via_prop[valid_prop]
@@ -164,7 +175,7 @@ class findPlasmidLossRate:
             rates[treatment] = sp.optimize.brentq(lambda L: 
                 np.exp((beta-L)*T) / (L * sp.integrate.quad(lambda t: np.exp((beta-L)*t) * p(T-t), 0, T)[0]) - R, 
                 1e-10, 10)
-            rates[treatment] = rates[treatment] * self.d_time # converts loss rate to per division by multiplying by doubling time
+            rates[treatment] = rates[treatment] / beta # converts loss rate to per division by dividing by growth rate
 
         return rates
 

@@ -1,0 +1,3 @@
+Plasmid Loss Rates (per division):
+Kanamycin: 1.70475 ± 1.30709
+Carbenicillin: 1.48813 ± 0.61955

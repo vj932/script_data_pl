@@ -1,0 +1,37 @@
+﻿sample #,carb dark,carb total,kan dark,kan total
+delta 6 1A,5,516,1,301
+delta 6 1B,1,398,0,369
+delta 6 1C,2,427,0,325
+delta 6 1D,4,417,0,353
+delta 6 1E,3,421,0,281
+delta 6 2A,3,324,0,295
+delta 6 2B,3,333,1,225
+delta 6 2C,5,386,1,316
+delta 6 2D,4,272,2,297
+delta 6 2E,5,295,2,234
+delta 6 3A,0,347,0,251
+delta 6 3B,1,390,0,329
+delta 6 3C,2,253,1,292
+delta 6 3D,4,299,1,293
+delta 6 3E,0,251,0,287
+total colonies =,42,5329,9,4448
+plasmid loss percentage: ,0.788140364,,0.202338129,
+,,,,
+,,,,
+sample #,carb dark,carb total,kan dark,kan total
+WT 1A,0,248,0,388
+WT 1B,0,249,0,371
+WT 1C,0,293,0,243
+WT 1D,0,235,0,260
+WT 1E,0,262,0,201
+WT 2A,0,350,0,273
+WT 2B,0,288,0,233
+WT 2C,0,390,0,204
+WT 2D,0,414,0,266
+WT 2E,0,253,0,278
+WT 3A,0,290,0,273
+WT 3B,0,254,0,276
+WT 3C,0,176,0,231
+WT 3D,0,160,0,299
+WT 3E,0,125,0,232
+total colonies =,0,3987,0,4028
