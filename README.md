@@ -1,4 +1,5 @@
 # script_data_pl
+This is the code and data accompanying the Model of plasmidless generation by asymmetrical cell division detailed in the Materials and Methods section of "Efficient Method for Estimating Plasmidless Cell Generation Frequency", by Christina Egami, Viraj Arora, and Manel Camps.
 
 Command-line usage for `get_loss.py`, which computes plasmid loss rates (per division) for Carbenicillin and/or Kanamycin treatments.
 
