@@ -1,7 +1,14 @@
 # script_data_pl
-This is the code and data accompanying the Model of plasmidless generation by asymmetrical cell division detailed in the Materials and Methods section of "Efficient Method for Estimating Plasmidless Cell Generation Frequency", by Christina Egami, Viraj Arora, and Manel Camps.
+This is the code and data accompanying the Model of plasmidless generation by asymmetrical cell division detailed in the Materials and Methods section of "Efficient Method for Estimating Plasmidless Cell Generation Frequency", by Christina Egami, Viraj Arora, and Manel Camps. 
 
-Command-line usage for `get_loss.py`, which computes plasmid loss rates (per division) for Carbenicillin and/or Kanamycin treatments.
+## Overview 
+This script implements a numerical solver that returns the plasmid loss probability per division given three inputs: 
+1. Growth data for a strain of bacteria transformed with the plasmid which is being observed, from which doubling time is inferred.
+2. Time series viability data for the probability of survival of the strain of bacteria being investigated, which is not transformed a plasmid containing the antibiotic resistance cassette, which is linearly interpolated by default. 
+3. Plating data corresponding to how many plasmid-free and plasmid-bearing colonies are found at plating, which in this method was done by identifying expression of GFP. 
+
+For a detailed list of assumptions refer to manuscript in the Materials and Methods section. Some key assumptions made were that we could infer change in cell count from change in OD600 directly, and plasmidless cells which are generated follow the same viability trends as the data specified in input (2). 
+
 
 ## Setup
 
@@ -12,7 +19,7 @@ The following files must be in the same folder as `get_loss.py` as the script is
 
 Dependencies: `numpy`, `pandas`, `scipy`, `matplotlib`.
 
-## Basic form
+## Command-line Usage
 
 ```
 python get_loss.py <prop_dark> [-g] [-o OUTPUT] [--graph-out GRAPH_OUT]
